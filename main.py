@@ -5,7 +5,6 @@ import pathlib
 import sys
 import json
 from datetime import date, timedelta
-import re
 from aiopath import AsyncPath
 from aiofile import async_open
 import logging
@@ -21,8 +20,6 @@ async def request(param_list):
                     if response.status == 200:
                         result = await response.json()
                         output_data(result)
-                        
-                        #all_results.append(result)
                     else: 
                         logging.error(f"Error status: {response.status}")
             except aiohttp.ClientConnectorError as err: 
@@ -39,7 +36,6 @@ def find_currency(requested_currency: str, answer: dict) -> dict: #знайти 
             return None
             
     requested_currency_Rate = answer.get("exchangeRate")[i]       
-    #print(requested_currency_Rate)
     return requested_currency_Rate, answer.get("date")    
     
 #формується параметр дати для запиту данних в API
@@ -52,11 +48,9 @@ async def date_param(quantity_days):
         days = quantity_days
         pre_day = (today - timedelta(days)).strftime("%d.%m.%Y")
         quantity_days -= 1 
-        #print(pre_day)
         param = {"date": pre_day}   
         param_list.append(param) 
     await request(param_list)
-    #for answer in api_answers:
     return None
 
 # async def write_json_file(filename: str, queue: asyncio.Queue): #запис даних до файла json        
@@ -118,7 +112,6 @@ if __name__ == "__main__":
     #         json.dump([], fd, ensure_ascii=False)
     try:
        num = sys.argv[1]
-       #num = 3
     except ValueError:
         print("Entered count days to get request")     
            
