@@ -5,12 +5,9 @@ import pathlib
 import sys
 import json
 from datetime import date, timedelta
-from aiopath import AsyncPath
-from aiofile import async_open
 import logging
 
-#BASE_DIR = pathlib.Path()
-#BASE_DIR.joinpath("storage/data.json")
+BASE_DIR = pathlib.Path()
 
 async def request(param_list):
     async with aiohttp.ClientSession() as session:    
@@ -53,17 +50,18 @@ async def date_param(quantity_days):
     await request(param_list)
     return None
 
-# async def write_json_file(filename: str, queue: asyncio.Queue): #запис даних до файла json        
-#     async with async_open(filename, 'w', encoding='utf-8') as afd:                
-#         upload.append(output)
-#         json.dump(upload, afd, ensure_ascii=False) 
-                
-# async def read_json_file(file: AsyncPath, queue: asyncio.Queue): #читання даних з файла json
-#     async with async_open(file, 'r', encoding='utf-8') as afd:
-#         text = afd.readline()
-#         if text:
-#             upload = json.loads(text)  
-#     return upload
+def read_json_file(): #читання даних з файла json
+    with open(BASE_DIR.joinpath("storage/data.json"), 'r', encoding='utf-8') as fd:
+        text = fd.readline()
+        if text:
+            upload = json.loads(text)  
+    return upload
+
+def write_json_file(output): #запис даних до файла json 
+    upload = read_json_file()         
+    with open(BASE_DIR.joinpath("storage/data.json"), 'w', encoding='utf-8') as fd:                
+        upload.append(output)
+        json.dump(upload, fd, ensure_ascii=False)
 
 def output_data(answer):
     all_value_Rates = {}
@@ -80,8 +78,9 @@ def output_data(answer):
     output = {
         date: all_value_Rates
         }
-    print([output]) 
-    return #write_json_file(output)               
+    write_json_file(output) 
+    print([output])
+    return             
 
 async def main(num):
     if 0 <= int(num) <= 10: 
@@ -89,27 +88,15 @@ async def main(num):
     else:    
         print("Quantity days must be between 1 and 10")
     return None
-    
 
-# async def run():
-#     files = AsyncPath('.').joinpath('files').glob('*.js')
-#     files_queue = asyncio.Queue()
-    
-#     file_reader = [asyncio.create_task(read_json_file(file, files_queue)) async for file in files]
-#     file_writer = asyncio.create_task(write_json_file('data.js', files_queue))
-    
-#     await asyncio.gather(*file_reader)
-#     await files_queue.join()
-#     file_writer.cancel()
-#     print('Completed')
     
 if __name__ == "__main__":
-    # STORAGE_DIR = pathlib.Path().joinpath('storage')
-    # FILE_STORAGE = STORAGE_DIR / 'data.json'
+    STORAGE_DIR = pathlib.Path().joinpath('storage')
+    FILE_STORAGE = STORAGE_DIR / 'data.json'
     
-    # if not FILE_STORAGE.exists():
-    #     with open(FILE_STORAGE, 'w', encoding='utf-8') as fd:
-    #         json.dump([], fd, ensure_ascii=False)
+    if not FILE_STORAGE.exists():
+        with open(FILE_STORAGE, 'w', encoding='utf-8') as fd:
+            json.dump([], fd, ensure_ascii=False)
     try:
        num = sys.argv[1]
     except ValueError:
