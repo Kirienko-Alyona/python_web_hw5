@@ -68,9 +68,9 @@ def output_data(answer):
     for i in ["EUR", "USD"]: 
         answer_currency_Rate, date = find_currency(i, answer)
         value_Rate = {
-            answer_currency_Rate.get("currency"): {
-                "sale": answer_currency_Rate.get("saleRate"), 
-                "purchase": answer_currency_Rate.get("purchaseRate")
+            answer_currency_Rate["currency"]: {
+                "sale": answer_currency_Rate["saleRate"], 
+                "purchase": answer_currency_Rate["purchaseRate"]
             }
         }
         all_value_Rates.update(value_Rate)
